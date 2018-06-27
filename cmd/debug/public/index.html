@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+	body {
+		margin: 0;
+		background-color: #1B1C1C;
+		color: #E6E6E8;
+	}
+
+	.grid-container {
+		display: grid;
+		height: 100vh;
+		grid-template-columns: repeat(5, 1fr);
+		grid-template-rows: 1fr;
+	}
+
+	.services-list {
+		grid-column: 1;
+		overflow-y: auto;
+		border-right: 1px solid #E6E6E8
+	}
+
+	.services-list::-webkit-scrollbar { 
+		    display: none; 
+	}
+
+	.services-list ul {
+    list-style-type: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.service {
+		border-bottom: 1px solid #E6E6E8;
+		padding-left: 2rem;
+	}
+	.service h1 {
+		margin: 0;
+		padding-top: 1em;
+	}
+	.service h2 {
+		font-size: 1em;
+	}
+	.service a:link{
+		color: #E6E6E8;
+	}
+	.service a:visited {
+		color: #E6E6E8;
+	}
+	.service-healthy {
+		background-color: rgba(76, 217, 100, 0.2);	
+	}
+	.service-warn {
+		background-color: rgba(255, 149, 0, 0.2);	
+	}
+	.service-error {
+		background-color: rgba(255, 59, 48, 0.2);	
+	}
+	
+	.logs {
+		grid-column: 2 / 6;
+		overflow: auto;
+		margin: 0;
+		padding: 2em;
+	}
+
+	.logs-empty {
+		text-align: center;
+	}
+</style>
+</head>
+<body class="grid-container">
+	<nav class="services-list">
+		<ul>
+		{{ range $key, $value := .ServicesStatuses }}
+		<li class="service service-{{ print . }}" id="{{ $key }}">
+				<h1><a href="/{{ $key }}">{{ .Name }}</a></h1>
+				<h2>{{ .State }}</h2>
+				<h2>{{ .Health }}</h2>
+			</li>
+		{{ end }}
+		</ul>
+	</nav>
+	<pre class="logs">{{ if .Logs }}{{ printf "%s" .Logs }}
+	{{ else }}
+		<h1 class="logs-empty">No logs in the last {{ .Period }} minutes</h1>
+	{{ end }}
+	</pre>
+	<script>
+	var ws = new WebSocket("ws://" + location.host + "/ws");
+
+	ws.onopen = function(evt) {
+			console.log("WS OPEN");
+	}
+	ws.onclose = function(evt) {
+			console.log("WS CLOSE");
+			ws = null;
+	}
+	ws.onmessage = function(e) {
+		if (e.data === "update") {
+			console.log("WS update");
+		}
+	}
+	ws.onerror = function(evt) {
+			console.error("WS ERROR: " + evt.data);
+	}
+	var logsContainer = document.getElementsByClassName("logs")[0];
+	logsContainer.scrollTop = logsContainer.scrollHeight;
+	debugger;
+	var currentServiceName = document.location.pathname.split("/").join("");
+	var service = document.getElementById(currentServiceName);
+	var servicesContainer = document.getElementsByClassName("services-list")[0];
+	servicesContainer.scrollTo(service.offsetLeft, service.offsetTop);
+	</script>
+</body>
+</html>	
