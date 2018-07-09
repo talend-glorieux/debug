@@ -16,10 +16,10 @@ import (
 
 // ServiceStatus represents a services status
 type ServiceStatus struct {
-	Name   string
-	State  string
-	Health string
-	Logs   []byte
+	Name   string `json:"name"`
+	State  string `json:"state"`
+	Health string `json:"health"`
+	Logs   []byte `json:"-"`
 }
 
 // String return a string representation of the service's current state
@@ -101,7 +101,6 @@ func (d *Docker) Collect(out chan ServiceStatus, errChan chan error) error {
 			logsReader, err := d.dockerClient.ContainerLogs(ctx, container.ID, types.ContainerLogsOptions{
 				ShowStdout: true,
 				ShowStderr: true,
-				Since:      "5m",
 			})
 			if err != nil {
 				errChan <- errors.Wrap(err, "Error collecting docker container logs")

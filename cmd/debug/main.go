@@ -1,24 +1,23 @@
-//go:generate statik -src=./public
+//go:generate packr
 
 package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
+	"fmt"
 	"html/template"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
 	"path"
 	"time"
 
+	"github.com/gobuffalo/packr"
 	"github.com/gorilla/websocket"
-	"github.com/rakyll/statik/fs"
 	log "github.com/sirupsen/logrus"
 	"github.com/talend-glorieux/debug"
-
-	_ "github.com/talend-glorieux/debug/cmd/debug/statik"
 )
 
 func main() {
@@ -84,13 +83,10 @@ func main() {
 }
 
 func serve(servicesStatuses *map[string]debug.ServiceStatus, updates chan int) {
-	statikFS, err := fs.New()
+	box := packr.NewBox("./public")
+	file, err := box.MustString("index.html")
 	checkError(err)
-	file, err := statikFS.Open("/index.html")
-	checkError(err)
-	fileContent, err := ioutil.ReadAll(file)
-	checkError(err)
-	tmpl, err := template.New("home").Parse(string(fileContent))
+	tmpl, err := template.New("home").Parse(file)
 	checkError(err)
 
 	type StatusPage struct {
@@ -134,6 +130,15 @@ func serve(servicesStatuses *map[string]debug.ServiceStatus, updates chan int) {
 		w.Write(out.Bytes())
 	})
 
+	http.HandleFunc("/services", func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		b, err := json.Marshal(serviceStatusMapToSlice(*servicesStatuses))
+		if err != nil {
+			fmt.Println("error:", err)
+		}
+		w.Write(b)
+	})
+
 	var upgrader = websocket.Upgrader{
 		CheckOrigin:       func(r *http.Request) bool { return true },
 		EnableCompression: true,
@@ -161,4 +166,12 @@ func checkError(err error) {
 		log.Error(err)
 		os.Exit(-1)
 	}
+}
+
+func serviceStatusMapToSlice(in map[string]debug.ServiceStatus) []debug.ServiceStatus {
+	ss := make([]debug.ServiceStatus, 0, len(in))
+	for _, value := range in {
+		ss = append(ss, value)
+	}
+	return ss
 }
