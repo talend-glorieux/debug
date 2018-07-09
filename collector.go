@@ -1,7 +1,6 @@
 package debug
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"path"
@@ -16,10 +15,10 @@ import (
 
 // ServiceStatus represents a services status
 type ServiceStatus struct {
-	Name   string `json:"name"`
-	State  string `json:"state"`
-	Health string `json:"health"`
-	Logs   []byte `json:"-"`
+	Name   string    `json:"name"`
+	State  string    `json:"state"`
+	Health string    `json:"health"`
+	Logs   io.Reader `json:"-"`
 }
 
 // String return a string representation of the service's current state
@@ -98,28 +97,18 @@ func (d *Docker) Collect(out chan ServiceStatus, errChan chan error) error {
 
 			ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			logsReader, err := d.dockerClient.ContainerLogs(ctx, container.ID, types.ContainerLogsOptions{
-				ShowStdout: true,
-				ShowStderr: true,
-			})
-			if err != nil {
-				errChan <- errors.Wrap(err, "Error collecting docker container logs")
-				return
+			if ServiceStatus.Logs == nil {
+				logsReader, err := d.dockerClient.ContainerLogs(ctx, container.ID, types.ContainerLogsOptions{
+					ShowStdout: true,
+					ShowStderr: true,
+					Follow:     true,
+				})
+				if err != nil {
+					errChan <- errors.Wrap(err, "Error collecting docker container logs")
+					return
+				}
+				serviceStatus.Logs = logsReader
 			}
-			var buf bytes.Buffer
-			_, err = io.Copy(&buf, logsReader)
-			if err != nil && err != io.EOF {
-				errChan <- err
-				return
-			}
-			err = logsReader.Close()
-			if err != nil {
-				errChan <- err
-				return
-			}
-			log.Debugf("Logs [%s] %d", serviceStatus.Name, buf.Len())
-			serviceStatus.Logs = buf.Bytes()
-
 			out <- serviceStatus
 		}(container, out)
 	}

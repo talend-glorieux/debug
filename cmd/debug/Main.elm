@@ -54,7 +54,7 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    WebSocket.listen "ws://localhost:4242/ws" Update
+    WebSocket.listen "ws://localhost:4242/ws" decodeServices
 
 
 init : ( Model, Cmd Msg )

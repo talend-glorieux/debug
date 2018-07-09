@@ -147,11 +147,16 @@ func serve(servicesStatuses *map[string]debug.ServiceStatus, updates chan int) {
 		c, err := upgrader.Upgrade(w, req, nil)
 		if err != nil {
 			log.Print("upgrade:", err)
+			log.Error(err)
 			return
 		}
 		defer c.Close()
 		for _ = range updates {
-			err = c.WriteMessage(websocket.TextMessage, []byte("update"))
+			b, err := json.Marshal(serviceStatusMapToSlice(*servicesStatuses))
+			if err != nil {
+				log.Error(err)
+			}
+			err = c.WriteMessage(websocket.TextMessage, b)
 			if err != nil {
 				log.Error(err)
 				break
