@@ -83,7 +83,7 @@ func main() {
 
 func serve(servicesStatuses *map[string]debug.ServiceStatus, updates chan int) {
 	box := packr.NewBox("./public")
-	file, err := box.MustString("index.html")
+	file, err := box.FindString("index.html")
 	checkError(err)
 	tmpl, err := template.New("home").Parse(file)
 	checkError(err)
