@@ -9,7 +9,7 @@ Get the latest binary.
 ## Usage
 
 Run `debug` at any time, anywhere. It will start collecting all the information
-it as access to.
+it has access to.
 
 Go to [the dashboard](http://localhost:4242)
 

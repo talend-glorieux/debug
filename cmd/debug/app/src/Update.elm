@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Array exposing (Array, get)
-import Dom.Scroll
+import Browser.Dom
 import Http
 import Model exposing (Model, Service)
 import Task
@@ -36,7 +36,7 @@ update msg model =
             ( model, Cmd.none )
 
         LogsStream l ->
-            ( { model | logs = model.logs ++ l ++ "\n" }, Task.attempt (always NoOp) (Dom.Scroll.toBottom "logs") )
+            ( { model | logs = model.logs ++ l ++ "\n" }, Task.attempt (always NoOp) (Scroll.toBottom "logs") )
 
         SelectService index ->
             ( { model | selectedService = index, logs = "" }, getLogs (get index model.services) )
