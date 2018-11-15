@@ -97,7 +97,7 @@ func (d *Docker) Collect(out chan ServiceStatus, errChan chan error) error {
 
 			ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			if ServiceStatus.Logs == nil {
+			if serviceStatus.Logs == nil {
 				logsReader, err := d.dockerClient.ContainerLogs(ctx, container.ID, types.ContainerLogsOptions{
 					ShowStdout: true,
 					ShowStderr: true,

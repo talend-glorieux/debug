@@ -1,5 +1,3 @@
-//go:generate packr
-
 package main
 
 import (
@@ -8,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
@@ -111,13 +110,21 @@ func serve(servicesStatuses *map[string]debug.ServiceStatus, updates chan int) {
 		if serviceName != "/" {
 			_, ok := (*servicesStatuses)[serviceName]
 			if ok {
-				statusPage.Logs = (*servicesStatuses)[serviceName].Logs
+				l, err := ioutil.ReadAll((*servicesStatuses)[serviceName].Logs)
+				if err != nil {
+					log.Error(err)
+				}
+				statusPage.Logs = l
 			} else {
 				log.Errorf("Unknow service %s", serviceName)
 			}
 		} else {
 			for _, serviceStatus := range *servicesStatuses {
-				statusPage.Logs = serviceStatus.Logs
+				l, err := ioutil.ReadAll(serviceStatus.Logs)
+				if err != nil {
+					log.Error(err)
+				}
+				statusPage.Logs = l
 				break
 			}
 		}
