@@ -43,6 +43,11 @@ a, a:visited, a:hover {
 	grid-row: 2;
 }
 
+.image {
+	grid-column: 1 / 6;
+	grid-row: 2;
+}
+
 .containers {
 	grid-column: 1 / 6;
 	grid-row: 2;

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
@@ -42,5 +43,35 @@ func (s *Server) handleImages() http.HandlerFunc {
 }
 
 func (s *Server) handleImage() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	var (
+		init sync.Once
+		tpl  *template.Template
+		err  error
+	)
+	return func(w http.ResponseWriter, r *http.Request) {
+		init.Do(func() {
+			tpl, err = template.ParseFiles("templates/partials.html", "templates/image.html")
+		})
+		if err != nil {
+			logrus.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		imageID := mux.Vars(r)["id"]
+		if imageID == "" {
+			logrus.Error("Must pass image ID", imageID)
+			http.Error(w, "Must pass image ID", http.StatusNotFound)
+			return
+		}
+		image, _, err := s.docker.ImageInspectWithRaw(context.Background(), imageID)
+		if err != nil {
+			logrus.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = tpl.ExecuteTemplate(w, "image.html", image)
+		if err != nil {
+			logrus.Error(err)
+		}
+	}
 }

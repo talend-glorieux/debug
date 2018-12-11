@@ -4,7 +4,6 @@
 	<thead>
 		<tr>
 			<td>RepoTag</td>
-			<td>ID</td>
 			<td>Created</td>
 			<td>Size</td>
 		</tr>	
@@ -12,8 +11,7 @@
 	<tbody>
 	{{ range . }}
 	<tr>
-		<td>{{ .RepoTags }}</td>
-		<td>{{ .ID }}</td>
+		<td><a href="/images/{{ .ID }}">{{ .RepoTags }}</a></td>
 		<td>{{ .Created }}</td>
 		<td data-controller="bytes">{{ .Size }}</td>
 	<tr>

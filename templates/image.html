@@ -1,0 +1,21 @@
+{{ template "header" }}
+<main class="image">
+<p>{{ .ID }}</p>
+<p>{{ .RepoTags }}</p>
+<p>{{ .RepoDigests }}</p>
+<p>{{ .Parent }}</p>
+<p>{{ .Comment }}</p>
+<p>{{ .Created }}</p>
+<p>{{ .Container }}</p>
+<p>{{ .ContainerConfig }}</p>
+<p>{{ .DockerVersion }}</p>
+<p>{{ .Author }}</p>
+<p>{{ .Config }}</p>
+<p>{{ .Architecture }}</p>
+<p>{{ .Os }}</p>
+<p>{{ .OsVersion }}</p>
+<p>{{ .Size }}</p>
+<p>{{ .VirtualSize }}</p>
+<p>{{ .RootFS }}</p>
+</main>
+{{ template "footer" }}
