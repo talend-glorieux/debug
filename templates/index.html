@@ -1,0 +1,41 @@
+{{ template "header" }}
+<h1>{{ .Name }}</h1>
+<dl>
+  <dt>Containers</dt>
+  <dd>{{ .Containers }}</dd>
+
+  <dt>Containers Running</dt>
+  <dd>{{ .ContainersRunning }}</dd>
+
+  <dt>Containers Paused</dt>
+  <dd>{{ .ContainersPaused }}</dd>
+
+  <dt>Containers Stopped</dt>
+  <dd>{{ .ContainersStopped }}</dd>
+
+  <dt>Images</dt>
+  <dd>{{ .Images }}</dd>
+
+  <dt>Driver</dt>
+  <dd>{{ .Driver }}</dd>
+
+  <dt>Goroutines</dt>
+  <dd>{{ .NGoroutines }}</dd>
+
+  <dt>Kernel version</dt>
+  <dd>{{ .KernelVersion }}</dd>
+
+  <dt>Operating System</dt>
+  <dd>{{ .OperatingSystem }} - {{ .OSType }}</dd>
+
+  <dt>Architecture</dt>
+  <dd>{{ .Architecture }}</dd>
+
+  <dt>CPU</dt>
+  <dd>{{ .NCPU }}</dd>
+
+  <dt>Memory</dt>
+  <dd>{{ .MemTotal }}</dd>
+</dl>
+<h2>Disk size</h2>
+{{ template "footer" }}

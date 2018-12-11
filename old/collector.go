@@ -119,17 +119,3 @@ func (d *Docker) Collect(out chan ServiceStatus, errChan chan error) error {
 func (d *Docker) Stop() error {
 	return d.dockerClient.Close()
 }
-
-type Weave struct{}
-
-func (w *Weave) Init() error {
-	return nil
-}
-
-func (w *Weave) Collect(out chan ServiceStatus, errChan chan error) error {
-	return nil
-}
-
-func (w *Weave) Stop() error {
-	return nil
-}

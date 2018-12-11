@@ -29,7 +29,6 @@ func main() {
 
 	collectors := make(map[string]debug.Collector)
 	collectors["docker"] = &debug.Docker{}
-	collectors["weave"] = &debug.Weave{}
 
 	statusUpdates := make(chan debug.ServiceStatus)
 	errChan := make(chan error)
