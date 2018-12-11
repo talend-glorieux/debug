@@ -1,13 +1,15 @@
 {{ define "header" }}<!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>debug</title>
+    <link rel="stylesheet" href="/assets/normalize.css">
     <link rel="stylesheet" href="/assets/main.css">
-    <script src="https://unpkg.com/stimulus/dist/stimulus.umd.js"></script>
-    <script src="/assets/main.js"></script>
+    <script src="/assets/stimulus.umd.js"></script>
+    <script src="/assets/turbolinks.js"></script>
+    <script src="/assets/main.js" defer></script>
   </head>
   <body>
-    <nav>
+    <nav class="navigation">
       <a href="/">System</a>
       <a href="/images">Images</a>
       <a href="/containers">Containers</a>

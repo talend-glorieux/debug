@@ -1,6 +1,24 @@
 {{ template "header" }}
-{{ range . }}
-<h1>{{ .ID }}</h1>
-<h2>{{ .RepoTags }}</h2>
-{{ end }}
+<main class="images">
+<table>
+	<thead>
+		<tr>
+			<td>RepoTag</td>
+			<td>ID</td>
+			<td>Created</td>
+			<td>Size</td>
+		</tr>	
+	</thead>
+	<tbody>
+	{{ range . }}
+	<tr>
+		<td>{{ .RepoTags }}</td>
+		<td>{{ .ID }}</td>
+		<td>{{ .Created }}</td>
+		<td data-controller="bytes">{{ .Size }}</td>
+	<tr>
+	{{ end }}
+	</tbody>
+</table>
+</main>
 {{ template "footer" }}

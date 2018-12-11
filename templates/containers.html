@@ -1,6 +1,22 @@
 {{ template "header" }}
-{{ range . }}
-<h1>{{ .ID }}</h1>
-<h2>{{ .Names }}</h2>
-{{ end }}
+<main class="containers">
+<table>
+	<thead>
+		<tr>
+			<td>ID</td>
+			<td>Names</td>
+			<td>Image</td>
+		</tr>	
+	</thead>
+	<tbody>
+	{{ range . }}
+	<tr>
+		<td>{{ .ID }}</td>
+		<td>{{ .Names }}</td>
+		<td>{{ .Image }}</td>
+	<tr>
+	{{ end }}
+	</tbody>
+</table>
+</main>
 {{ template "footer" }}

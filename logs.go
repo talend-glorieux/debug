@@ -39,7 +39,6 @@ func (s *Server) handleLogs() http.HandlerFunc {
 func (s *Server) handleLogsEvents() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Print("New Event listener")
-
 		containersID := r.URL.Query()["containers_id"]
 
 		if len(containersID) == 0 {
@@ -67,7 +66,15 @@ func (s *Server) handleLogsEvents() http.HandlerFunc {
 
 		logsReaders := []io.Reader{}
 		for _, containerID := range containersID {
-			logsReader, err := s.docker.ContainerLogs(context.Background(), containerID, types.ContainerLogsOptions{Follow: true, ShowStdout: true, ShowStderr: true})
+			logsReader, err := s.docker.ContainerLogs(
+				context.Background(),
+				containerID,
+				types.ContainerLogsOptions{
+					Follow:     true,
+					ShowStdout: true,
+					ShowStderr: true,
+				},
+			)
 			if err != nil {
 				log.Error("Docker container logs", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -111,10 +118,8 @@ func (s *Server) handleLogsEvents() http.HandlerFunc {
 
 		multiReader := io.MultiReader(logsReaders...)
 		scanner := bufio.NewScanner(multiReader)
-		log.Info("Scan")
 		for scanner.Scan() {
 			event := NewEvent("", scanner.Text())
-			log.Info("E", event)
 			fmt.Fprint(w, event)
 			f.Flush()
 		}
