@@ -3,16 +3,22 @@
 <table>
 	<thead>
 		<tr>
-			<td>Names</td>
+			<td>Status</td>
+			<td>Name</td>
 			<td>Image</td>
 		</tr>
 	</thead>
 	<tbody>
 	{{ range . }}
 	<tr>
-    <td><a href="/containers/{{ .ID }}">{{ .Names }}</a></td>
-		<td>{{ .Image }}</td>
-	<tr>
+		<td>
+			<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewbox="0 0 20 20">
+				<circle cx="10" cy="11" r="3" fill="{{ .StatusColor }}"/>
+			</svg>
+		</td>
+    <td><a href="/containers/{{ .ID }}">{{ .Name }}</a></td>
+		<td><a href="/images/{{ .ImageID }}">{{ .Image }}</a></td>
+	</tr>
 	{{ end }}
 	</tbody>
 </table>

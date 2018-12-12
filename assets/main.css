@@ -39,22 +39,22 @@ a, a:visited, a:hover {
 }
 
 .images {
-	grid-column: 1 / 6;
+	grid-column: 2 / 6;
 	grid-row: 2;
 }
 
 .image {
-	grid-column: 1 / 6;
+	grid-column: 2 / 6;
 	grid-row: 2;
 }
 
 .containers {
-	grid-column: 1 / 6;
+	grid-column: 2 / 6;
 	grid-row: 2;
 }
 
 .container {
-	grid-column: 1 / 6;
+	grid-column: 2 / 6;
 	grid-row: 2;
 }
 

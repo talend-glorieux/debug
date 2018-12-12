@@ -19,6 +19,7 @@ require (
 	github.com/pkg/errors v0.8.0
 	github.com/segmentio/ksuid v1.0.2
 	github.com/sirupsen/logrus v1.2.0
+	github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c
 	glorieux.io/adapter v0.1.0
 	golang.org/x/net v0.0.0-20181114220301-adae6a3d119a // indirect
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect

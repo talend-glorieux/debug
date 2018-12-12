@@ -1,24 +1,35 @@
 {{ template "header" }}
 <main class="container">
-<p>{{ .ID }}</p>
-<p>{{ .Created }}</p>
-<p>{{ .Path }}</p>
-<p>{{ .Args }}</p>
+<h1>{{ .Name }}</h1>
 <p>{{ .State }}</p>
-<p>{{ .Image }}</p>
-<p>{{ .ResolvConfPath }}</p>
-<p>{{ .HostnamePath }}</p>
-<p>{{ .HostsPath }}</p>
-<p>{{ .LogPath }}</p>
-<p>{{ .Name }}</p>
 <p>{{ .RestartCount }}</p>
-<p>{{ .Driver }}</p>
-<p>{{ .Platform }}</p>
-<p>{{ .MountLabel }}</p>
-<p>{{ .ProcessLabel }}</p>
+<p>{{ .Created }}</p>
+<a href="/images/{{ .ImageID }}">Image</a>
+<h2>Command</h2>
+<p>{{ .Command }}</p>
+<h2>Files</h2>
+<ul>
+<li>{{ .ResolvConfPath }}</li>
+<li>{{ .HostnamePath }}</li>
+<li>{{ .HostsPath }}</li>
+<li>{{ .LogPath }}</li>
+</ul>
+<h2>AppArmor profile</h2>
 <p>{{ .AppArmorProfile }}</p>
-<p>{{ .ExecIDs }}</p>
-<p>{{ .SizeRw }}</p>
-<p>{{ .SizeRootFs }}</p>
+<h2>Top</h2>
+<table>
+	<thead>
+		<tr>
+			{{ range .TopTitles }}
+			<td>{{ . }}</td>
+			{{ end }}
+		</tr>
+	</thead>
+	<tbody>
+		{{ range .TopProcesses }}
+		<tr>{{ range .}}<td>{{ . }}</td>{{ end }}</tr>
+		{{ end }}
+	</tbody>
+</table>
 </main>
 {{ template "footer" }}

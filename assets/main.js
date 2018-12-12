@@ -33,10 +33,12 @@ application.register("logs", LogsController);
 
 class BytesController extends Stimulus.Controller {
   connect() {
-    this.data.get("format");
-    this.element.textContent = byteSize(this.element.textContent, {
-      units: this.data.get("format")
-    });
+    if (!this.data.get("done")) {
+      this.element.textContent = byteSize(this.element.textContent, {
+        units: this.data.get("format")
+      });
+    }
+    this.data.set("done", true);
   }
 }
 application.register("bytes", BytesController);
@@ -146,7 +148,6 @@ class ByteSize {
         }
       }
     }
-
     this.value = prefix + bytes;
     this.unit = "";
   }

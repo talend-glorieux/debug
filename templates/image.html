@@ -1,21 +1,77 @@
 {{ template "header" }}
 <main class="image">
-<p>{{ .ID }}</p>
-<p>{{ .RepoTags }}</p>
-<p>{{ .RepoDigests }}</p>
-<p>{{ .Parent }}</p>
-<p>{{ .Comment }}</p>
-<p>{{ .Created }}</p>
-<p>{{ .Container }}</p>
-<p>{{ .ContainerConfig }}</p>
-<p>{{ .DockerVersion }}</p>
-<p>{{ .Author }}</p>
-<p>{{ .Config }}</p>
-<p>{{ .Architecture }}</p>
-<p>{{ .Os }}</p>
-<p>{{ .OsVersion }}</p>
-<p>{{ .Size }}</p>
-<p>{{ .VirtualSize }}</p>
-<p>{{ .RootFS }}</p>
+<h1>{{ .Name }}</h1>
+<dl>
+{{ if .Parent }}
+	<dt>Parent</dt>
+	<dd>{{ .Parent }}</dd>
+{{ end }}
+{{ if .Comment }}
+	<dt>Comment</dt>
+	<dd>{{ .Comment }}</dd>
+{{ end }}
+<dt>Created</dt>
+<dd>{{ .Created }}</dd>
+{{ if .Author }}
+<dt>Author</dt>
+<dd>{{ .Author }}</dd>
+{{ end }}
+<dt>Docker version</dt>
+<dd>{{ .DockerVersion }}</dd>
+<dt>Architecture</dt>
+<dd>{{ .Architecture }}</dd>
+<dt>Operating system</dt>
+<dd>{{ .Os }} - {{ .OsVersion }}</dd>
+<dt>Size</dt>
+<dd data-controller="bytes">{{ .Size }}</dd>
+</dl>
+<h2>Configuration</h2>
+<dl>
+	{{ if .ConfigUser }}
+	<dt>User</dt>
+	<dd>{{ .ConfigUser }}</dd>
+	{{ end }}
+	{{ if .ConfigEntrypoint }}
+	<dt>Entrypoint</dt>
+	<dd>{{ .ConfigEntrypoint }}</dd>
+	{{ end }}
+	{{ if .ConfigCmd }}
+	<dt>Command</dt>
+	<dd>{{ .ConfigCmd }}</dd>
+	{{ end }}
+</dl>
+{{ if .ConfigExposedPorts }}
+<h3>ExposedPorts</h3>
+<ul>
+	{{ range .ConfigExposedPorts }}
+		<li>{{ . }}</li>
+	{{ end }}
+</ul>
+{{ end }}
+{{ if .ConfigEnv }}
+<h3>Environment variables</h3>
+<ul>
+	{{ range .ConfigEnv }}
+		<li>{{ . }}</li>
+	{{ end }}
+</ul>
+{{ end }}
+{{ if .ConfigVolumes }}
+<h3>Volumes</h3>
+<ul>
+	{{ range .ConfigVolumes }}
+		<li>{{ . }}</li>
+	{{ end }}
+</ul>
+{{ end }}
+{{ if .ConfigLabels }}
+<h3>Labels</h3>
+{{ range $key, $value := .ConfigLabels }}
+<dl>
+		<dt>{{ $key }}</dt>
+		<dd>{{ $value }}</dd>
+</dl>
+{{ end }}
+{{ end }}
 </main>
 {{ template "footer" }}
