@@ -53,6 +53,11 @@ a, a:visited, a:hover {
 	grid-row: 2;
 }
 
+.container {
+	grid-column: 1 / 6;
+	grid-row: 2;
+}
+
 .logs {
 	grid-column: 1 / 6;
 	grid-row: 2;

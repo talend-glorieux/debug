@@ -3,16 +3,14 @@
 <table>
 	<thead>
 		<tr>
-			<td>ID</td>
 			<td>Names</td>
 			<td>Image</td>
-		</tr>	
+		</tr>
 	</thead>
 	<tbody>
 	{{ range . }}
 	<tr>
-		<td>{{ .ID }}</td>
-		<td>{{ .Names }}</td>
+    <td><a href="/containers/{{ .ID }}">{{ .Names }}</a></td>
 		<td>{{ .Image }}</td>
 	<tr>
 	{{ end }}

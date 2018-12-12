@@ -1,0 +1,24 @@
+{{ template "header" }}
+<main class="container">
+<p>{{ .ID }}</p>
+<p>{{ .Created }}</p>
+<p>{{ .Path }}</p>
+<p>{{ .Args }}</p>
+<p>{{ .State }}</p>
+<p>{{ .Image }}</p>
+<p>{{ .ResolvConfPath }}</p>
+<p>{{ .HostnamePath }}</p>
+<p>{{ .HostsPath }}</p>
+<p>{{ .LogPath }}</p>
+<p>{{ .Name }}</p>
+<p>{{ .RestartCount }}</p>
+<p>{{ .Driver }}</p>
+<p>{{ .Platform }}</p>
+<p>{{ .MountLabel }}</p>
+<p>{{ .ProcessLabel }}</p>
+<p>{{ .AppArmorProfile }}</p>
+<p>{{ .ExecIDs }}</p>
+<p>{{ .SizeRw }}</p>
+<p>{{ .SizeRootFs }}</p>
+</main>
+{{ template "footer" }}

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
@@ -45,5 +46,31 @@ func (s *Server) handleContainers() http.HandlerFunc {
 }
 
 func (s *Server) handleContainer() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	var (
+		init sync.Once
+		tpl  *template.Template
+		err  error
+	)
+	return func(w http.ResponseWriter, r *http.Request) {
+		init.Do(func() {
+			tpl, err = template.ParseFiles("templates/partials.html", "templates/container.html")
+		})
+		if err != nil {
+			logrus.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		containerID := mux.Vars(r)["id"]
+		container, err := s.docker.ContainerInspect(context.Background(), containerID)
+		if err != nil {
+			logrus.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = tpl.ExecuteTemplate(w, "container.html", container)
+		if err != nil {
+			logrus.Error(err)
+		}
+	}
+
 }

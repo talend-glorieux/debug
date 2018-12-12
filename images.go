@@ -58,11 +58,6 @@ func (s *Server) handleImage() http.HandlerFunc {
 			return
 		}
 		imageID := mux.Vars(r)["id"]
-		if imageID == "" {
-			logrus.Error("Must pass image ID", imageID)
-			http.Error(w, "Must pass image ID", http.StatusNotFound)
-			return
-		}
 		image, _, err := s.docker.ImageInspectWithRaw(context.Background(), imageID)
 		if err != nil {
 			logrus.Error(err)
