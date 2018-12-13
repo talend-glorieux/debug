@@ -4,6 +4,7 @@ import (
 	"context"
 	"html/template"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -19,9 +20,15 @@ func (s *Server) handleImages() http.HandlerFunc {
 		tpl  *template.Template
 		err  error
 	)
+	type image struct {
+		ID      string
+		Name    string
+		Created int
+		Size    int
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		init.Do(func() {
-			tpl, err = template.ParseFiles("templates/partials.html", "templates/images.html")
+			tpl, err = s.parseTemplate("images.html")
 		})
 		if err != nil {
 			logrus.Error(err)
@@ -36,7 +43,24 @@ func (s *Server) handleImages() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		err = tpl.ExecuteTemplate(w, "images.html", images)
+
+		imagesResponse := make([]image, len(images))
+		for index, img := range images {
+			imagesResponse[index] = image{
+				ID:      img.ID,
+				Name:    "None",
+				Created: int(img.Created),
+				Size:    int(img.Size),
+			}
+
+			if len(img.RepoTags) > 0 {
+				imagesResponse[index].Name = img.RepoTags[0]
+			}
+		}
+
+		sort.Slice(imagesResponse, func(i, j int) bool { return imagesResponse[i].Name < imagesResponse[j].Name })
+
+		err = tpl.ExecuteTemplate(w, "images.html", imagesResponse)
 		if err != nil {
 			logrus.Error(err)
 		}
@@ -72,7 +96,7 @@ func (s *Server) handleImage() http.HandlerFunc {
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		init.Do(func() {
-			tpl, err = template.ParseFiles("templates/partials.html", "templates/image.html")
+			tpl, err = s.parseTemplate("image.html")
 		})
 		if err != nil {
 			logrus.Error(err)

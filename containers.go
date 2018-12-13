@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -29,7 +30,7 @@ func (s *Server) handleContainers() http.HandlerFunc {
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		init.Do(func() {
-			tpl, err = template.ParseFiles("templates/partials.html", "templates/containers.html")
+			tpl, err = s.parseTemplate("containers.html")
 		})
 		if err != nil {
 			logrus.Error(err)
@@ -62,6 +63,8 @@ func (s *Server) handleContainers() http.HandlerFunc {
 				containersResponse[index].StatusColor = "red"
 			}
 		}
+
+		sort.Slice(containersResponse, func(i, j int) bool { return containersResponse[i].Name < containersResponse[j].Name })
 
 		err = tpl.ExecuteTemplate(w, "containers.html", containersResponse)
 		if err != nil {
@@ -97,7 +100,7 @@ func (s *Server) handleContainer() http.HandlerFunc {
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		init.Do(func() {
-			tpl, err = template.ParseFiles("templates/partials.html", "templates/container.html")
+			tpl, err = s.parseTemplate("container.html")
 		})
 		if err != nil {
 			logrus.Error(err)
@@ -106,13 +109,6 @@ func (s *Server) handleContainer() http.HandlerFunc {
 		}
 		containerID := mux.Vars(r)["id"]
 		container, err := s.docker.ContainerInspect(context.Background(), containerID)
-		if err != nil {
-			logrus.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		top, err := s.docker.ContainerTop(context.Background(), containerID, []string{})
 		if err != nil {
 			logrus.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -131,8 +127,17 @@ func (s *Server) handleContainer() http.HandlerFunc {
 			HostsPath:       container.HostsPath,
 			LogPath:         container.LogPath,
 			AppArmorProfile: container.AppArmorProfile,
-			TopTitles:       top.Titles,
-			TopProcesses:    top.Processes,
+		}
+
+		if container.State.Status == "running" {
+			top, err := s.docker.ContainerTop(context.Background(), containerID, []string{})
+			if err != nil {
+				logrus.Error(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			response.TopTitles = top.Titles
+			response.TopProcesses = top.Processes
 		}
 
 		err = tpl.ExecuteTemplate(w, "container.html", response)

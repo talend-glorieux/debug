@@ -8,7 +8,7 @@ require (
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.3.3 // indirect
-	github.com/gobuffalo/packr v1.21.0
+	github.com/gobuffalo/packr v1.21.9
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/gorilla/handlers v1.4.0
@@ -21,7 +21,7 @@ require (
 	github.com/sirupsen/logrus v1.2.0
 	github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c
 	glorieux.io/adapter v0.1.0
-	golang.org/x/net v0.0.0-20181114220301-adae6a3d119a // indirect
+	golang.org/x/sys v0.0.0-20181213081344-73d4af5aa059 // indirect
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect
 	google.golang.org/grpc v1.17.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect

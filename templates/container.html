@@ -14,8 +14,12 @@
 <li>{{ .HostsPath }}</li>
 <li>{{ .LogPath }}</li>
 </ul>
-<h2>AppArmor profile</h2>
-<p>{{ .AppArmorProfile }}</p>
+<h2>Security</h2>
+<dl>
+	<dt>AppArmor profile</dt>
+	<dd>{{ .AppArmorProfile }}</dd>
+</dl>
+{{ if .TopTitles }}
 <h2>Top</h2>
 <table>
 	<thead>
@@ -31,5 +35,6 @@
 		{{ end }}
 	</tbody>
 </table>
+{{ end }}
 </main>
 {{ template "footer" }}

@@ -11,7 +11,7 @@
 	<tbody>
 	{{ range . }}
 	<tr>
-		<td><a href="/images/{{ .ID }}">{{ .RepoTags }}</a></td>
+		<td><a href="/images/{{ .ID }}">{{ .Name }}</a></td>
 		<td>{{ .Created }}</td>
 		<td data-controller="bytes">{{ .Size }}</td>
 	<tr>

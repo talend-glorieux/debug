@@ -22,7 +22,7 @@ func (s *Server) handleLogs() http.HandlerFunc {
 	)
 	return func(w http.ResponseWriter, r *http.Request) {
 		init.Do(func() {
-			tpl, err = template.ParseFiles("templates/partials.html", "templates/logs.html")
+			tpl, err = s.parseTemplate("logs.html")
 		})
 		if err != nil {
 			log.Error(err)

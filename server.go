@@ -8,13 +8,15 @@ import (
 	"time"
 
 	"github.com/docker/docker/client"
+	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
-	router *mux.Router
-	docker *client.Client
+	router    *mux.Router
+	docker    *client.Client
+	templates packr.Box
 }
 
 func NewServer() (*Server, error) {
@@ -23,8 +25,9 @@ func NewServer() (*Server, error) {
 		return nil, err
 	}
 	s := &Server{
-		router: mux.NewRouter(),
-		docker: dockerClient,
+		router:    mux.NewRouter(),
+		docker:    dockerClient,
+		templates: packr.NewBox("./templates"),
 	}
 	s.routes()
 
@@ -35,6 +38,23 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.router.ServeHTTP(w, r)
 }
 
+func (s *Server) parseTemplate(name string) (*template.Template, error) {
+	partialsFile, err := s.templates.FindString("partials.html")
+	if err != nil {
+		return nil, err
+	}
+	templateFile, err := s.templates.FindString(name)
+	if err != nil {
+		return nil, err
+	}
+
+	partialsTemplate, err := template.New("partials").Parse(partialsFile)
+	if err != nil {
+		return nil, err
+	}
+	return partialsTemplate.New(name).Parse(templateFile)
+}
+
 func (s *Server) handleIndex() http.HandlerFunc {
 	var (
 		init sync.Once
@@ -43,7 +63,7 @@ func (s *Server) handleIndex() http.HandlerFunc {
 	)
 	return func(w http.ResponseWriter, r *http.Request) {
 		init.Do(func() {
-			tpl, err = template.ParseFiles("templates/partials.html", "templates/index.html")
+			tpl, err = s.parseTemplate("index.html")
 		})
 		if err != nil {
 			logrus.Error(err)
