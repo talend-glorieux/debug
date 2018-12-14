@@ -2,15 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"html/template"
 	"net/http"
 	"sync"
 	"time"
 
+	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -82,6 +85,50 @@ func (s *Server) handleIndex() http.HandlerFunc {
 		err = tpl.ExecuteTemplate(w, "index.html", info)
 		if err != nil {
 			logrus.Error(err)
+		}
+	}
+}
+
+func (s *Server) handleEvents() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		lastEventID := r.Header.Get("Last-Event-ID")
+		if lastEventID != "" {
+			log.Printf("Last event ID: %s", lastEventID)
+		}
+
+		// TODO: If not headers send all events?
+		f, ok := w.(http.Flusher)
+		if !ok {
+			log.Error("Streaming unsupported!")
+			http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Connection", "keep-alive")
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Transfer-Encoding", "chunked")
+		w.Header().Set("Expire", "0")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+
+		closeNotify := w.(http.CloseNotifier).CloseNotify()
+		eventChan, errChan := s.docker.Events(context.Background(), types.EventsOptions{})
+		for {
+			select {
+			case msg := <-eventChan:
+				fmt.Println("received message", msg.Type, msg.Action, msg.Actor.Attributes)
+				event := &Event{
+					ID:   msg.Actor.ID,
+					Type: fmt.Sprintf("%s-%s", msg.Type, msg.Action),
+				}
+				fmt.Fprint(w, event)
+				f.Flush()
+			case err := <-errChan:
+				log.Error(err)
+			case <-closeNotify:
+				log.Println("HTTP connection just closed.")
+				return
+			}
 		}
 	}
 }

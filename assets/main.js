@@ -160,3 +160,31 @@ class ByteSize {
 function byteSize(bytes, options) {
   return new ByteSize(bytes, options);
 }
+
+class EventsController extends Stimulus.Controller {
+  connect() {
+    console.log("Events controller connected.");
+    this.eventSource = new EventSource("/events");
+    this.eventSource.onopen = this.onOpen;
+    this.eventSource.onmessage = this.onMessage.bind(this);
+    this.eventSource.onerror = this.onError;
+  }
+
+  onOpen(event) {
+    console.log("Connected events source.");
+  }
+
+  onMessage(message) {
+    console.log("onMessage", message);
+  }
+
+  onError(error) {
+    console.error("Events source error.", error);
+  }
+
+  disconnect() {
+    console.log("Closing events source.");
+    this.eventSource.close();
+  }
+}
+application.register("events", EventsController);

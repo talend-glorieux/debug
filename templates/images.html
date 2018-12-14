@@ -6,10 +6,11 @@
 			<td>RepoTag</td>
 			<td>Created</td>
 			<td>Size</td>
-		</tr>	
+		</tr>
 	</thead>
 	<tbody>
 	{{ range . }}
+  <tr id="{{ .ID }}">
 	<tr>
 		<td><a href="/images/{{ .ID }}">{{ .Name }}</a></td>
 		<td>{{ .Created }}</td>
