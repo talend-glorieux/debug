@@ -7,7 +7,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/gorilla/mux"
@@ -35,9 +34,7 @@ func (s *Server) handleImages() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
-		images, err := s.docker.ImageList(ctx, types.ImageListOptions{})
+		images, err := s.docker.ImageList(context.Background(), types.ImageListOptions{})
 		if err != nil {
 			logrus.Error("Docker images list", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
