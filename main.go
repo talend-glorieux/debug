@@ -10,6 +10,8 @@ import (
 	"glorieux.io/adapter"
 )
 
+const applicationName = "docker-console"
+
 func main() {
 	server, err := NewServer()
 	if err != nil {

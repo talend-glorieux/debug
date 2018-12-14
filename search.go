@@ -4,6 +4,8 @@ import (
 	"context"
 	"html/template"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/blevesearch/bleve"
@@ -13,9 +15,13 @@ import (
 )
 
 func (s *Server) buildIndex() error {
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		return err
+	}
+	os.Mkdir(filepath.Join(cacheDir, applicationName), os.ModePerm)
 	mapping := bleve.NewIndexMapping()
-	var err error
-	s.index, err = bleve.New("docker-console.bleve", mapping)
+	s.index, err = bleve.New(filepath.Join(cacheDir, applicationName, "index.bleve"), mapping)
 	if err != nil {
 		return err
 	}
@@ -50,6 +56,10 @@ func (s *Server) handleSearch() http.HandlerFunc {
 		ImageID     string
 		StatusColor string
 	}
+	type searchResponse struct {
+		Hits       int
+		Containers []container
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		init.Do(func() {
 			tpl, err = s.parseTemplate("search.html")
@@ -69,16 +79,19 @@ func (s *Server) handleSearch() http.HandlerFunc {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			containerListOptions := types.ContainerListOptions{All: true, Filters: filters.NewArgs()}
-			for _, r := range searchResults.Hits {
-				containerListOptions.Filters.Add("id", r.ID)
-			}
+			containers := []types.Container{}
+			if searchResults.Total > 0 {
+				containerListOptions := types.ContainerListOptions{All: true, Filters: filters.NewArgs()}
+				for _, r := range searchResults.Hits {
+					containerListOptions.Filters.Add("id", r.ID)
+				}
 
-			containers, err := s.docker.ContainerList(context.Background(), containerListOptions)
-			if err != nil {
-				log.Error(err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
+				containers, err = s.docker.ContainerList(context.Background(), containerListOptions)
+				if err != nil {
+					log.Error(err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
 			}
 			containersResponse := make([]container, len(containers))
 			for index, c := range containers {
@@ -87,7 +100,10 @@ func (s *Server) handleSearch() http.HandlerFunc {
 					Name: c.Names[0][1:],
 				}
 			}
-			err = tpl.ExecuteTemplate(w, "search.html", containersResponse)
+			err = tpl.ExecuteTemplate(w, "search.html", searchResponse{
+				Hits:       int(searchResults.Total),
+				Containers: containersResponse,
+			})
 		} else {
 			err = tpl.ExecuteTemplate(w, "search.html", nil)
 		}

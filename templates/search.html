@@ -5,10 +5,14 @@
 <button type="submit">Submit</button>
 </form>
 {{ if . }}
-{{ range . }}
+{{ if .Hits}}
+{{ range .Containers }}
 <ul>
 <li><a href="/containers/{{ .ID }}">{{ .Name }}</a></li>
 </ul>
+{{ end }}
+{{ else }}
+	<h1>No matching container</h1>
 {{ end }}
 {{ end }}
 </main>
