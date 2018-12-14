@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
@@ -91,6 +92,7 @@ func (s *Server) handleIndex() http.HandlerFunc {
 
 func (s *Server) handleEvents() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Print("New events listener")
 		lastEventID := r.Header.Get("Last-Event-ID")
 		if lastEventID != "" {
 			log.Printf("Last event ID: %s", lastEventID)
@@ -111,23 +113,39 @@ func (s *Server) handleEvents() http.HandlerFunc {
 		w.Header().Set("Pragma", "no-cache")
 		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 
-		closeNotify := w.(http.CloseNotifier).CloseNotify()
-		eventChan, errChan := s.docker.Events(context.Background(), types.EventsOptions{})
+		notify := w.(http.CloseNotifier).CloseNotify()
+		go func() {
+			<-notify
+			log.Println("HTTP connection just closed.")
+		}()
+
+		eventChan, errChan := s.docker.Events(context.Background(), types.EventsOptions{
+			Filters: filters.NewArgs(
+				filters.Arg("type", "container"),
+				filters.Arg("type", "image"),
+				filters.Arg("event", "start"),
+				filters.Arg("event", "stop"),
+			),
+		})
 		for {
 			select {
-			case msg := <-eventChan:
+			case msg, ok := <-eventChan:
+				if !ok {
+					return
+				}
 				fmt.Println("received message", msg.Type, msg.Action, msg.Actor.Attributes)
 				event := &Event{
 					ID:   msg.Actor.ID,
-					Type: fmt.Sprintf("%s-%s", msg.Type, msg.Action),
+					Data: "New Message",
 				}
 				fmt.Fprint(w, event)
 				f.Flush()
-			case err := <-errChan:
+			case err, ok := <-errChan:
+				if !ok {
+					return
+				}
 				log.Error(err)
-			case <-closeNotify:
-				log.Println("HTTP connection just closed.")
-				return
+				f.Flush()
 			}
 		}
 	}

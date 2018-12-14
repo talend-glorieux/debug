@@ -175,7 +175,8 @@ class EventsController extends Stimulus.Controller {
   }
 
   onMessage(message) {
-    console.log("onMessage", message);
+    console.log("onMessage");
+    Turbolinks.visit();
   }
 
   onError(error) {
