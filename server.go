@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/blevesearch/bleve"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
@@ -21,6 +22,7 @@ type Server struct {
 	router    *mux.Router
 	docker    *client.Client
 	templates packr.Box
+	index     bleve.Index
 }
 
 func NewServer() (*Server, error) {
@@ -34,7 +36,6 @@ func NewServer() (*Server, error) {
 		templates: packr.NewBox("./templates"),
 	}
 	s.routes()
-
 	return s, nil
 }
 

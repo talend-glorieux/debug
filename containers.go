@@ -8,7 +8,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/gorilla/mux"
@@ -37,9 +36,7 @@ func (s *Server) handleContainers() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
-		containers, err := s.docker.ContainerList(ctx, types.ContainerListOptions{All: true})
+		containers, err := s.docker.ContainerList(context.Background(), types.ContainerListOptions{All: true})
 		if err != nil {
 			logrus.Error("Docker containers list", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

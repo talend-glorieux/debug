@@ -6,8 +6,9 @@ all: clean
 run: clean
 	go run .
 
-clean:
-	rm -rf $(NAME)
-
 install:
 	go get -u github.com/gobuffalo/packr/...
+
+clean:
+	rm -rf $(NAME)
+	rm -rf *.bleve

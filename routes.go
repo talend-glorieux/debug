@@ -15,6 +15,7 @@ func (s *Server) routes() {
 	s.router.HandleFunc("/containers/{id}", s.handleContainer())
 	s.router.HandleFunc("/logs", s.handleLogs())
 	s.router.HandleFunc("/logs/events", s.handleLogsEvents())
+	s.router.HandleFunc("/search", s.handleSearch())
 	s.router.HandleFunc("/events", s.handleEvents())
 	s.router.HandleFunc("/", s.handleIndex())
 }

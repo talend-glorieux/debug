@@ -1,3 +1,4 @@
 elm-stuff
 vendor
 .DS_Store
+*.bleve

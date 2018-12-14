@@ -1,0 +1,15 @@
+{{ template "header" }}
+<main class="search">
+<form action="/search">
+<input type="text" placeholder="Search.." name="q">
+<button type="submit">Submit</button>
+</form>
+{{ if . }}
+{{ range . }}
+<ul>
+<li><a href="/containers/{{ .ID }}">{{ .Name }}</a></li>
+</ul>
+{{ end }}
+{{ end }}
+</main>
+{{ template "footer" }}
