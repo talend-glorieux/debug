@@ -6,13 +6,20 @@
 </form>
 {{ if . }}
 {{ if .Hits}}
+<h2>Containers</h2>
 {{ range .Containers }}
 <ul>
 <li><a href="/containers/{{ .ID }}">{{ .Name }}</a></li>
 </ul>
 {{ end }}
+<h2>Images</h2>
+{{ range .Images }}
+<ul>
+<li><a href="/images/{{ .ID }}">{{ .Name }}</a></li>
+</ul>
+{{ end }}
 {{ else }}
-	<h1>No matching container</h1>
+	<h1>No matching results.</h1>
 {{ end }}
 {{ end }}
 </main>
