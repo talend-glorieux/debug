@@ -42,12 +42,16 @@ func (s *Server) resolveContainers(containersID ...string) ([]types.Container, e
 	return s.docker.ContainerList(context.Background(), containerListOptions)
 }
 
-func (s *Server) resolveImages(imagesID ...string) ([]types.ImageSummary, error) {
-	imageListOptions := types.ImageListOptions{Filters: filters.NewArgs()}
-	for _, id := range imagesID {
-		imageListOptions.Filters.Add("id", id)
+func (s *Server) resolveImages(imagesID ...string) ([]types.ImageInspect, error) {
+	log.Warn(imagesID)
+	images := make([]types.ImageInspect, len(imagesID))
+	for index, id := range imagesID {
+		image, _, err := s.docker.ImageInspectWithRaw(context.Background(), id)
+		if err == nil {
+			images[index] = image
+		}
 	}
-	return s.docker.ImageList(context.Background(), imageListOptions)
+	return images, nil
 }
 
 func (s *Server) buildIndex() error {
@@ -56,35 +60,59 @@ func (s *Server) buildIndex() error {
 		return err
 	}
 	os.Mkdir(filepath.Join(cacheDir, applicationName), os.ModePerm)
-	indexFilePath := filepath.Join(cacheDir, applicationName, "index.bleve")
-	err = os.RemoveAll(indexFilePath)
+	containerIndexFilePath := filepath.Join(cacheDir, applicationName, "containers.index")
+	err = os.RemoveAll(containerIndexFilePath)
 	if err != nil {
 		log.Error("New index", err)
 	}
-	s.index, err = bleve.New(indexFilePath, bleve.NewIndexMapping())
+	containersIndex, err := bleve.New(containerIndexFilePath, bleve.NewIndexMapping())
 	if err != nil {
 		log.Error("New index", err)
 		return err
 	}
-	s.index.SetName(containersIndexName)
-
+	containersIndex.SetName(containersIndexName)
 	containers, err := s.docker.ContainerList(context.Background(), types.ContainerListOptions{All: true})
 	if err != nil {
 		log.Error("Search container list", err)
 		return err
 	}
 	for _, container := range containers {
-		err = s.index.Index(container.ID, container)
+		err = containersIndex.Index(container.ID, container)
 		if err != nil {
 			log.Error("Container index error", err)
 			return err
 		}
 	}
+
+	imagesIndexFilePath := filepath.Join(cacheDir, applicationName, "images.index")
+	err = os.RemoveAll(imagesIndexFilePath)
+	if err != nil {
+		log.Error("New index", err)
+	}
+	imagesIndex, err := bleve.New(imagesIndexFilePath, bleve.NewIndexMapping())
+	if err != nil {
+		log.Error("New index", err)
+		return err
+	}
+	imagesIndex.SetName(imagesIndexName)
+	images, err := s.docker.ImageList(context.Background(), types.ImageListOptions{})
+	if err != nil {
+		log.Error("Search images list", err)
+		return err
+	}
+	for _, image := range images {
+		err = imagesIndex.Index(image.ID, image)
+		if err != nil {
+			log.Error("Images index error", err)
+			return err
+		}
+	}
+
+	s.index = bleve.NewIndexAlias(containersIndex, imagesIndex)
 	docCount, _ := s.index.DocCount()
 	log.Infof("%d containers indexed.", docCount)
 	return nil
 }
-
 func (s *Server) handleSearch() http.HandlerFunc {
 	go s.buildIndex()
 	var (
