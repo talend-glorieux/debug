@@ -56,7 +56,12 @@ func (s *Server) buildIndex() error {
 		return err
 	}
 	os.Mkdir(filepath.Join(cacheDir, applicationName), os.ModePerm)
-	s.index, err = bleve.New(filepath.Join(cacheDir, applicationName, "index.bleve"), bleve.NewIndexMapping())
+	indexFilePath := filepath.Join(cacheDir, applicationName, "index.bleve")
+	err = os.RemoveAll(indexFilePath)
+	if err != nil {
+		log.Error("New index", err)
+	}
+	s.index, err = bleve.New(indexFilePath, bleve.NewIndexMapping())
 	if err != nil {
 		log.Error("New index", err)
 		return err
@@ -127,16 +132,25 @@ func (s *Server) handleSearch() http.HandlerFunc {
 				return
 			}
 			images, err := s.resolveImages(imagesID...)
+			if err != nil {
+				log.Error(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
 			searchResponse := searchResponse{
 				Hits:       int(searchResults.Total),
 				Containers: make([]container, len(containers)),
+				Images:     make([]image, len(images)),
 			}
 			for index, c := range containers {
 				searchResponse.Containers[index] = container{ID: c.ID, Name: c.Names[0][1:]}
 			}
 			for index, img := range images {
-				searchResponse.Images[index] = image{ID: img.ID, Name: img.RepoTags[0]}
+				searchResponse.Images[index] = image{ID: img.ID, Name: ""}
+				if len(img.RepoTags) > 0 {
+					searchResponse.Images[index].Name = img.RepoTags[0]
+				}
 			}
 
 			err = tpl.ExecuteTemplate(w, "search.html", searchResponse)
