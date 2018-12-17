@@ -9,8 +9,10 @@ import (
 	"sync"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 func (s *Server) handleImages() http.HandlerFunc {
@@ -138,5 +140,31 @@ func (s *Server) handleImage() http.HandlerFunc {
 		if err != nil {
 			logrus.Error(err)
 		}
+	}
+}
+
+func (s *Server) handleImagesClean() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.Background()
+		images, err := s.docker.ImageList(ctx, types.ImageListOptions{
+			Filters: filters.NewArgs(filters.Arg("dangling", "true")),
+		})
+		if err != nil {
+			logrus.Error("Docker images list", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		for _, image := range images {
+			imageRemoveResponse, err := s.docker.ImageRemove(
+				ctx,
+				image.ID,
+				types.ImageRemoveOptions{PruneChildren: true},
+			)
+			if err != nil {
+				log.Error(err)
+			}
+		}
+		w.WriteHeader(http.StatusOK)
 	}
 }

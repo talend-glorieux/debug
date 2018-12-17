@@ -189,3 +189,21 @@ class EventsController extends Stimulus.Controller {
   }
 }
 application.register("events", EventsController);
+
+class ImagesController extends Stimulus.Controller {
+  clean() {
+    console.log("Clean dangling images");
+    const deleteRequest = new XMLHttpRequest();
+    deleteRequest.onerror = this.onError;
+    deleteRequest.onload = this.onResponse;
+    deleteRequest.open("DELETE", "/images");
+    deleteRequest.send();
+  }
+  onError(error) {
+    console.error(error);
+  }
+  onResponse() {
+    console.log(this);
+  }
+}
+application.register("images", ImagesController);

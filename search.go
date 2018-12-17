@@ -113,6 +113,7 @@ func (s *Server) buildIndex() error {
 	log.Infof("%d containers indexed.", docCount)
 	return nil
 }
+
 func (s *Server) handleSearch() http.HandlerFunc {
 	go s.buildIndex()
 	var (
