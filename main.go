@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -12,7 +14,18 @@ import (
 
 const applicationName = "docker-console"
 
+// Version is the application version
+// Set at build time
+var Version string
+
 func main() {
+	showVersion := flag.Bool("version", false, fmt.Sprintf("Show %s version.", applicationName))
+	flag.Parse()
+	if *showVersion {
+		fmt.Println(Version)
+		return
+	}
+
 	server, err := NewServer()
 	if err != nil {
 		log.Fatal(err)
