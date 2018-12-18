@@ -156,7 +156,7 @@ func (s *Server) handleImagesClean() http.HandlerFunc {
 		}
 
 		for _, image := range images {
-			imageRemoveResponse, err := s.docker.ImageRemove(
+			_, err := s.docker.ImageRemove(
 				ctx,
 				image.ID,
 				types.ImageRemoveOptions{PruneChildren: true},
