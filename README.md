@@ -1,6 +1,6 @@
-# debug
+# docker-console
 
-A service oriented debugging dashboard.
+A docker dashboard.
 
 ## Install
 
@@ -8,14 +8,5 @@ Get the latest binary.
 
 ## Usage
 
-Run `debug` at any time, anywhere. It will start collecting all the information
-it has access to.
-
-Go to [the dashboard](http://localhost:4242)
-
-## Collectors
-
-`debug` collects service status information from different sources.
-
-* [Docker](https://www.docker.com/) State, Health and Logs.
-* [Weave](https://www.weave.works/) TBD.
+Run `docker-console` at any time, anywhere. It will start collecting all the information
+it has access to and open a new browser tab.
