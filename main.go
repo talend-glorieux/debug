@@ -20,6 +20,8 @@ var Version string
 
 func main() {
 	showVersion := flag.Bool("version", false, fmt.Sprintf("Show %s version.", applicationName))
+	openNewTab := flag.Bool("open", true, "Opens or not a new browser tab when launching.")
+	port := flag.String("port", "4242", fmt.Sprintf("%s HTTP port.", applicationName))
 	flag.Parse()
 	if *showVersion {
 		fmt.Println(Version)
@@ -30,11 +32,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = open.Run("http://localhost:4242")
-	if err != nil {
-		logrus.Error("Can't launch browser at https://localhost:4242")
+
+	if *openNewTab {
+		err = open.Run("http://localhost:4242")
+		if err != nil {
+			logrus.Error("Can't launch browser at https://localhost:4242")
+		}
 	}
-	http.ListenAndServe(":4242", adapter.Adapt(
+
+	http.ListenAndServe(":"+*port, adapter.Adapt(
 		server,
 		adapter.Timing(),
 		handlers.CompressHandler,

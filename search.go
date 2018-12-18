@@ -35,6 +35,9 @@ func splitResultByTypes(results search.DocumentMatchCollection) (containers []st
 }
 
 func (s *Server) resolveContainers(containersID ...string) ([]types.Container, error) {
+	if len(containersID) == 0 {
+		return []types.Container{}, nil
+	}
 	containerListOptions := types.ContainerListOptions{All: true, Filters: filters.NewArgs()}
 	for _, id := range containersID {
 		containerListOptions.Filters.Add("id", id)
@@ -43,7 +46,9 @@ func (s *Server) resolveContainers(containersID ...string) ([]types.Container, e
 }
 
 func (s *Server) resolveImages(imagesID ...string) ([]types.ImageInspect, error) {
-	log.Warn(imagesID)
+	if len(imagesID) == 0 {
+		return []types.ImageInspect{}, nil
+	}
 	images := make([]types.ImageInspect, len(imagesID))
 	for index, id := range imagesID {
 		image, _, err := s.docker.ImageInspectWithRaw(context.Background(), id)

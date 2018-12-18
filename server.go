@@ -20,8 +20,8 @@ import (
 
 type Server struct {
 	router    *mux.Router
-	docker    *client.Client
 	templates packr.Box
+	docker    *client.Client
 	index     bleve.Index
 }
 
