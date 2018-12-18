@@ -1,0 +1,23 @@
+{{ template "header" }}
+<main class="volumes">
+<table>
+	<thead>
+		<tr>
+			<td>Name</td>
+			<td>Created</td>
+			<td>Size</td>
+		</tr>
+	</thead>
+	<tbody>
+	{{ range . }}
+  <tr>
+	<tr>
+		<td>{{ .Name }}</td>
+		<td>{{ .Created }}</td>
+		<td data-controller="bytes">{{ .Size }}</td>
+	<tr>
+	{{ end }}
+	</tbody>
+</table>
+</main>
+{{ template "footer" }}

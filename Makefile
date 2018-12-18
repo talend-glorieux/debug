@@ -1,5 +1,5 @@
 NAME="docker-console"
-VERSION="0.1.0-alpha"
+VERSION="0.1.0-alpha.1"
 LDFLAGS=-ldflags "-X main.Version=${VERSION}"
 
 all: clean
@@ -7,8 +7,6 @@ all: clean
 
 run: clean
 	CompileDaemon -command="./docker-console -open=false" -graceful-kill=true -color=true -include="*.html" -include="*.css" -include="*.js"
-
-
 
 install:
 	go get -u github.com/gobuffalo/packr/...

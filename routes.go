@@ -17,6 +17,8 @@ func (s *Server) routes() {
 	s.router.HandleFunc("/containers", s.handleContainers()).Methods(http.MethodGet)
 	s.router.HandleFunc("/containers/{id}", s.handleContainer()).Methods(http.MethodGet)
 
+	s.router.HandleFunc("/volumes", s.handleVolumes()).Methods(http.MethodGet)
+
 	s.router.HandleFunc("/logs", s.handleLogs()).Methods(http.MethodGet)
 	s.router.HandleFunc("/logs/events", s.handleLogsEvents())
 

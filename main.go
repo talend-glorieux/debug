@@ -3,11 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/handlers"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/skratchdot/open-golang/open"
 	"glorieux.io/adapter"
 )
@@ -36,8 +35,10 @@ func main() {
 	if *openNewTab {
 		err = open.Run("http://localhost:4242")
 		if err != nil {
-			logrus.Error("Can't launch browser at https://localhost:4242")
+			log.Errorf("Can't launch browser at http://localhost:%s", *port)
 		}
+	} else {
+		log.Infof("Application available at http://localhost:%s", *port)
 	}
 
 	http.ListenAndServe(":"+*port, adapter.Adapt(
