@@ -6,10 +6,11 @@ all: clean
 	packr build $(LDFLAGS) -o $(NAME) .
 
 run: clean
-	go run .
+	CompileDaemon -command="./docker-console" -graceful-kill=true
 
 install:
 	go get -u github.com/gobuffalo/packr/...
+	go get -u github.com/githubnemo/CompileDaemon
 
 release: clean
 	mkdir release
