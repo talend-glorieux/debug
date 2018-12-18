@@ -1,0 +1,30 @@
+{{ template "header" }}
+<main class="search">
+<form action="/search">
+<input type="text" placeholder="Search.." name="q">
+<button type="submit">Submit</button>
+</form>
+{{ if . }}
+{{ if .Hits}}
+{{ if .Containers }}
+<h2>Containers</h2>
+{{ range .Containers }}
+<ul>
+<li><a href="/containers/{{ .ID }}">{{ .Name }}</a></li>
+</ul>
+{{ end }}
+{{ end }}
+{{ if .Images }}
+<h2>Images</h2>
+{{ range .Images }}
+<ul>
+<li><a href="/images/{{ .ID }}">{{ .Name }}</a></li>
+</ul>
+{{ end }}
+{{ end }}
+{{ else }}
+	<h1>No matching results.</h1>
+{{ end }}
+{{ end }}
+</main>
+{{ template "footer" }}

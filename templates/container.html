@@ -1,0 +1,40 @@
+{{ template "header" }}
+<main class="container">
+<h1>{{ .Name }}</h1>
+<p>{{ .State }}</p>
+<p>{{ .RestartCount }}</p>
+<p>{{ .Created }}</p>
+<a href="/images/{{ .ImageID }}">Image</a>
+<h2>Command</h2>
+<p>{{ .Command }}</p>
+<h2>Files</h2>
+<ul>
+<li>{{ .ResolvConfPath }}</li>
+<li>{{ .HostnamePath }}</li>
+<li>{{ .HostsPath }}</li>
+<li>{{ .LogPath }}</li>
+</ul>
+<h2>Security</h2>
+<dl>
+	<dt>AppArmor profile</dt>
+	<dd>{{ .AppArmorProfile }}</dd>
+</dl>
+{{ if .TopTitles }}
+<h2>Top</h2>
+<table>
+	<thead>
+		<tr>
+			{{ range .TopTitles }}
+			<td>{{ . }}</td>
+			{{ end }}
+		</tr>
+	</thead>
+	<tbody>
+		{{ range .TopProcesses }}
+		<tr>{{ range .}}<td>{{ . }}</td>{{ end }}</tr>
+		{{ end }}
+	</tbody>
+</table>
+{{ end }}
+</main>
+{{ template "footer" }}

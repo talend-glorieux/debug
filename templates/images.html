@@ -1,0 +1,26 @@
+{{ template "header" }}
+<main class="images">
+<div data-controller="images">
+  <button data-action="images#clean">Clean dangling images</button>
+</div>
+<table>
+	<thead>
+		<tr>
+			<td>RepoTag</td>
+			<td>Created</td>
+			<td>Size</td>
+		</tr>
+	</thead>
+	<tbody>
+	{{ range . }}
+  <tr id="{{ .ID }}">
+	<tr>
+		<td><a href="/images/{{ .ID }}">{{ .Name }}</a></td>
+		<td>{{ .Created }}</td>
+		<td data-controller="bytes">{{ .Size }}</td>
+	<tr>
+	{{ end }}
+	</tbody>
+</table>
+</main>
+{{ template "footer" }}

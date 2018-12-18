@@ -1,0 +1,52 @@
+{{ template "header" }}
+<main class="system" data-controller="events">
+<section class="informations">
+	<h2>Informations</h2>
+	<dl>
+		<dt>Driver</dt>
+		<dd>{{ .Driver }}</dd>
+
+		<dt>Kernel version</dt>
+		<dd>{{ .KernelVersion }}</dd>
+
+		<dt>Operating System</dt>
+		<dd>{{ .OperatingSystem }} - {{ .OSType }}</dd>
+
+		<dt>Architecture</dt>
+		<dd>{{ .Architecture }}</dd>
+	</dl>
+</section>
+<section class="count">
+	<h2>Count</h2>
+	<dl>
+		<dt>Containers</dt>
+		<dd>{{ .Containers }}</dd>
+
+		<dt>Containers Running</dt>
+		<dd>{{ .ContainersRunning }}</dd>
+
+		<dt>Containers Paused</dt>
+		<dd>{{ .ContainersPaused }}</dd>
+
+		<dt>Containers Stopped</dt>
+		<dd>{{ .ContainersStopped }}</dd>
+
+		<dt>Images</dt>
+		<dd>{{ .Images }}</dd>
+	</dl>
+</section>
+<section class="resources">
+	<h2>Resources</h2>
+	<dl>
+		<dt>CPU</dt>
+		<dd>{{ .NCPU }}</dd>
+
+		<dt>Memory</dt>
+		<dd data-controller="bytes" data-bytes-format="iec">{{ .MemTotal }}</dd>
+
+		<dt>Goroutines</dt>
+		<dd>{{ .NGoroutines }}</dd>
+	</dl>
+</section>
+</main>
+{{ template "footer" }}
