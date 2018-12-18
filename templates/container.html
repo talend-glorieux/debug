@@ -1,10 +1,15 @@
 {{ template "header" }}
 <main class="container">
 <h1>{{ .Name }}</h1>
-<p>{{ .State }}</p>
-<p>{{ .RestartCount }}</p>
-<p>{{ .Created }}</p>
 <a href="/images/{{ .ImageID }}">Image</a>
+<dl>
+	<dt>State</dt>
+	<dd>{{ .State }}</dd>
+	<dt>Restarts</dt>
+	<dd>{{ .RestartCount }}</dd>
+	<dt>Created</dt>
+	<dd>{{ .Created }}</dd>
+</dl>
 <h2>Command</h2>
 <p>{{ .Command }}</p>
 <h2>Files</h2>
@@ -16,7 +21,7 @@
 </ul>
 <h2>Security</h2>
 <dl>
-	<dt>AppArmor profile</dt>
+	<dt><a href="https://docs.docker.com/engine/security/apparmor/" target="_blank">AppArmor profile</a></dt>
 	<dd>{{ .AppArmorProfile }}</dd>
 </dl>
 {{ if .TopTitles }}

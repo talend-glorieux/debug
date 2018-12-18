@@ -7,10 +7,32 @@ body {
 	grid-template-rows: repeat(5, 1fr);
 	background-color: rgb(46, 48, 49);
 	color: rgb(218, 219, 219);
+	line-height: 2em;
 }
 
 a, a:visited, a:hover {
 	color: rgb(218, 219, 219);
+}
+
+dt, dd {
+  display: inline;
+}
+
+dt:before {
+  content: "";
+  display: block;
+}
+
+dt {
+	font-weight: bold;
+}
+
+dt::after {
+  content: ": ";
+}
+
+dd {
+	margin: 0;
 }
 
 .navigation {

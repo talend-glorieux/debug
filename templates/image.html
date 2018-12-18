@@ -21,7 +21,7 @@
 <dt>Architecture</dt>
 <dd>{{ .Architecture }}</dd>
 <dt>Operating system</dt>
-<dd>{{ .Os }} - {{ .OsVersion }}</dd>
+<dd>{{ .Os }} {{ if .OsVersion }}- {{ .OsVersion }}{{ end }}</dd>
 <dt>Size</dt>
 <dd data-controller="bytes">{{ .Size }}</dd>
 </dl>

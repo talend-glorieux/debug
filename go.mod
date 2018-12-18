@@ -53,6 +53,7 @@ require (
 	golang.org/x/net v0.0.0-20181217023233-e147a9138326 // indirect
 	golang.org/x/sys v0.0.0-20181217223516-dcdaa6325bcb // indirect
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect
+	google.golang.org/appengine v1.2.0 // indirect
 	google.golang.org/grpc v1.17.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )

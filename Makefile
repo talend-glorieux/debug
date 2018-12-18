@@ -6,7 +6,9 @@ all: clean
 	packr build $(LDFLAGS) -o $(NAME) .
 
 run: clean
-	CompileDaemon -command="./docker-console -open=false" -graceful-kill=true -color=true
+	CompileDaemon -command="./docker-console -open=false" -graceful-kill=true -color=true -include="*.html" -include="*.css" -include="*.js"
+
+
 
 install:
 	go get -u github.com/gobuffalo/packr/...
