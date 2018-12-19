@@ -28,6 +28,7 @@ func (s *Server) handleContainers() http.HandlerFunc {
 		StatusColor string
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		init.Do(func() {
 			tpl, err = s.parseTemplate("containers.html")
 		})
@@ -36,8 +37,8 @@ func (s *Server) handleContainers() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		containers, err := s.docker.ContainerList(context.Background(), types.ContainerListOptions{All: true})
-		if err != nil {
+		containers, err := s.docker.ContainerList(ctx, types.ContainerListOptions{All: true})
+		if err != nil && err != context.Canceled {
 			logrus.Error("Docker containers list", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -96,17 +97,18 @@ func (s *Server) handleContainer() http.HandlerFunc {
 		TopProcesses [][]string
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		init.Do(func() {
 			tpl, err = s.parseTemplate("container.html")
 		})
-		if err != nil {
+		if err != nil && err != context.Canceled {
 			logrus.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		containerID := mux.Vars(r)["id"]
-		container, err := s.docker.ContainerInspect(context.Background(), containerID)
-		if err != nil {
+		container, err := s.docker.ContainerInspect(ctx, containerID)
+		if err != nil && err != context.Canceled {
 			logrus.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -127,8 +129,8 @@ func (s *Server) handleContainer() http.HandlerFunc {
 		}
 
 		if container.State.Status == "running" {
-			top, err := s.docker.ContainerTop(context.Background(), containerID, []string{})
-			if err != nil {
+			top, err := s.docker.ContainerTop(ctx, containerID, []string{})
+			if err != nil && err != context.Canceled {
 				logrus.Error(err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

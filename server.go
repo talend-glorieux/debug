@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -105,7 +106,7 @@ func (s *Server) handleIndex() http.HandlerFunc {
 		}
 
 		diskUsage, err := s.docker.DiskUsage(ctx)
-		if err != nil {
+		if err != nil && err != context.Canceled {
 			logrus.Error("Docker disk usage", err)
 			diskUsage = diskUsageCache
 		} else {
@@ -113,7 +114,7 @@ func (s *Server) handleIndex() http.HandlerFunc {
 		}
 
 		info, err := s.docker.Info(ctx)
-		if err != nil {
+		if err != nil && err != context.Canceled {
 			logrus.Error("Docker info", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

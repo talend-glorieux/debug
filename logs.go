@@ -43,7 +43,7 @@ func (s *Server) handleLogsEvents() http.HandlerFunc {
 
 		if len(containersID) == 0 {
 			containers, err := s.docker.ContainerList(ctx, types.ContainerListOptions{})
-			if err != nil {
+			if err != nil && err != context.Canceled {
 				log.Error("Docker containers list", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return

@@ -149,7 +149,7 @@ func (s *Server) handleImagesClean() http.HandlerFunc {
 		images, err := s.docker.ImageList(ctx, types.ImageListOptions{
 			Filters: filters.NewArgs(filters.Arg("dangling", "true")),
 		})
-		if err != nil {
+		if err != nil && err != context.Canceled {
 			logrus.Error("Docker images list", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -161,7 +161,7 @@ func (s *Server) handleImagesClean() http.HandlerFunc {
 				image.ID,
 				types.ImageRemoveOptions{PruneChildren: true},
 			)
-			if err != nil {
+			if err != nil && err != context.Canceled {
 				log.Error(err)
 			}
 		}

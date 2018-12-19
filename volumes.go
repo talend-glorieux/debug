@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"html/template"
 	"net/http"
 	"sort"
@@ -32,7 +33,7 @@ func (s *Server) handleVolumes() http.HandlerFunc {
 			return
 		}
 		diskUsage, err := s.docker.DiskUsage(ctx)
-		if err != nil {
+		if err != nil && err != context.Canceled {
 			logrus.Error("Docker disk usage", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
