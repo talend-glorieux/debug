@@ -4,48 +4,61 @@
 	<h2>Informations</h2>
 	<dl>
 		<dt>Driver</dt>
-		<dd>{{ .Driver }}</dd>
+		<dd>{{ .Info.Driver }}</dd>
 
 		<dt>Kernel version</dt>
-		<dd>{{ .KernelVersion }}</dd>
+		<dd>{{ .Info.KernelVersion }}</dd>
 
 		<dt>Operating System</dt>
-		<dd>{{ .OperatingSystem }} - {{ .OSType }}</dd>
+		<dd>{{ .Info.OperatingSystem }} - {{ .Info.OSType }}</dd>
 
 		<dt>Architecture</dt>
-		<dd>{{ .Architecture }}</dd>
+		<dd>{{ .Info.Architecture }}</dd>
 	</dl>
 </section>
 <section class="count">
 	<h2>Count</h2>
 	<dl>
 		<dt>Containers</dt>
-		<dd>{{ .Containers }}</dd>
+		<dd>{{ .Info.Containers }}</dd>
 
 		<dt>Containers Running</dt>
-		<dd>{{ .ContainersRunning }}</dd>
+		<dd>{{ .Info.ContainersRunning }}</dd>
 
 		<dt>Containers Paused</dt>
-		<dd>{{ .ContainersPaused }}</dd>
+		<dd>{{ .Info.ContainersPaused }}</dd>
 
 		<dt>Containers Stopped</dt>
-		<dd>{{ .ContainersStopped }}</dd>
+		<dd>{{ .Info.ContainersStopped }}</dd>
 
 		<dt>Images</dt>
-		<dd>{{ .Images }}</dd>
+		<dd>{{ .Info.Images }}</dd>
 	</dl>
 </section>
 <section class="resources">
 	<h2>Resources</h2>
 	<dl>
 		<dt>CPU</dt>
-		<dd>{{ .NCPU }}</dd>
+		<dd>{{ .Info.NCPU }}</dd>
 
 		<dt>Memory</dt>
-		<dd data-controller="bytes" data-bytes-format="iec">{{ .MemTotal }}</dd>
+		<dd data-controller="bytes" data-bytes-format="iec">{{ .Info.MemTotal }}</dd>
 
 		<dt>Goroutines</dt>
-		<dd>{{ .NGoroutines }}</dd>
+		<dd>{{ .Info.NGoroutines }}</dd>
+	</dl>
+</section>
+<section class="disk-usage">
+	<h2>Disk usage</h2>
+	<dl>
+		<dt>Containers size</dt>
+		<dd data-controller="bytes">{{ .ContainersSize }}</dd>
+		<dt>Images size</dt>
+		<dd data-controller="bytes">{{ .ImagesSize }}</dd>
+		<dt>Layers size</dt>
+		<dd data-controller="bytes">{{ .LayersSize }}</dd>
+		<dt>Volumes size</dt>
+		<dd data-controller="bytes">{{ .VolumesSize }}</dd>
 	</dl>
 </section>
 </main>

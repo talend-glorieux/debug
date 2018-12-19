@@ -1,12 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"html/template"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/blevesearch/bleve"
 	"github.com/docker/docker/api/types"
@@ -60,13 +58,43 @@ func (s *Server) parseTemplate(name string) (*template.Template, error) {
 	return partialsTemplate.New(name).Parse(templateFile)
 }
 
+func sumVolumesSize(volumes []*types.Volume) (sum int) {
+	for i := range volumes {
+		sum += int(volumes[i].UsageData.Size)
+	}
+	return sum
+}
+
+func sumImagesSize(images []*types.ImageSummary) (sum int) {
+	for i := range images {
+		sum += int(images[i].Size)
+	}
+	return sum
+}
+
+func sumContainersSize(containers []*types.Container) (sum int) {
+	for i := range containers {
+		sum += int(containers[i].SizeRootFs)
+	}
+	return sum
+}
+
 func (s *Server) handleIndex() http.HandlerFunc {
 	var (
-		init sync.Once
-		tpl  *template.Template
-		err  error
+		init           sync.Once
+		tpl            *template.Template
+		err            error
+		diskUsageCache types.DiskUsage
 	)
+	type response struct {
+		Info           types.Info
+		LayersSize     int
+		VolumesSize    int
+		ImagesSize     int
+		ContainersSize int
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		init.Do(func() {
 			tpl, err = s.parseTemplate("index.html")
 		})
@@ -75,16 +103,28 @@ func (s *Server) handleIndex() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-		defer cancel()
+
+		diskUsage, err := s.docker.DiskUsage(ctx)
+		if err != nil {
+			logrus.Error("Docker disk usage", err)
+			diskUsage = diskUsageCache
+		} else {
+			diskUsageCache = diskUsage
+		}
+
 		info, err := s.docker.Info(ctx)
 		if err != nil {
 			logrus.Error("Docker info", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		// TODO: Add DiskUsage
-		err = tpl.ExecuteTemplate(w, "index.html", info)
+		err = tpl.ExecuteTemplate(w, "index.html", response{
+			Info:           info,
+			LayersSize:     int(diskUsage.LayersSize),
+			VolumesSize:    sumVolumesSize(diskUsage.Volumes),
+			ImagesSize:     sumImagesSize(diskUsage.Images),
+			ContainersSize: sumContainersSize(diskUsage.Containers),
+		})
 		if err != nil {
 			logrus.Error(err)
 		}
@@ -93,6 +133,7 @@ func (s *Server) handleIndex() http.HandlerFunc {
 
 func (s *Server) handleEvents() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		log.Print("New events listener")
 		lastEventID := r.Header.Get("Last-Event-ID")
 		if lastEventID != "" {
@@ -120,7 +161,7 @@ func (s *Server) handleEvents() http.HandlerFunc {
 			log.Println("HTTP connection just closed.")
 		}()
 
-		eventChan, errChan := s.docker.Events(context.Background(), types.EventsOptions{
+		eventChan, errChan := s.docker.Events(ctx, types.EventsOptions{
 			Filters: filters.NewArgs(
 				filters.Arg("type", "container"),
 				filters.Arg("type", "image"),

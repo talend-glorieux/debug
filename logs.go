@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/docker/docker/api/types"
 	log "github.com/sirupsen/logrus"
@@ -38,12 +37,11 @@ func (s *Server) handleLogs() http.HandlerFunc {
 
 func (s *Server) handleLogsEvents() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 		log.Print("New Event listener")
 		containersID := r.URL.Query()["containers_id"]
 
 		if len(containersID) == 0 {
-			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-			defer cancel()
 			containers, err := s.docker.ContainerList(ctx, types.ContainerListOptions{})
 			if err != nil {
 				log.Error("Docker containers list", err)
@@ -61,8 +59,6 @@ func (s *Server) handleLogsEvents() http.HandlerFunc {
 				containersID = append(containersID, container.ID)
 			}
 		}
-
-		log.Info("Containers", containersID)
 
 		logsReaders := []io.Reader{}
 		for _, containerID := range containersID {

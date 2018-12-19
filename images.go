@@ -145,7 +145,7 @@ func (s *Server) handleImage() http.HandlerFunc {
 
 func (s *Server) handleImagesClean() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.Background()
+		ctx := r.Context()
 		images, err := s.docker.ImageList(ctx, types.ImageListOptions{
 			Filters: filters.NewArgs(filters.Arg("dangling", "true")),
 		})

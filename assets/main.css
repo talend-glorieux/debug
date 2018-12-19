@@ -45,7 +45,7 @@ dd {
 .system {
 	display: inline-grid;
 	grid-row: 2;
-	grid-column: 3 / 5;
+	grid-column: 2 / 6;
 }
 
 .system .informations{
@@ -58,6 +58,10 @@ dd {
 
 .system .resources {
 	grid-column: 3;
+}
+
+.system .disk-usage {
+	grid-column: 4;
 }
 
 .images {
