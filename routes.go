@@ -20,7 +20,7 @@ func (s *Server) routes() {
 	s.router.HandleFunc("/volumes", s.handleVolumes()).Methods(http.MethodGet)
 
 	s.router.HandleFunc("/logs", s.handleLogs()).Methods(http.MethodGet)
-	s.router.HandleFunc("/logs/events", s.handleLogsEvents())
+	// s.router.HandleFunc("/logs/events", s.handleLogsEvents())
 
 	s.router.HandleFunc("/search", s.handleSearch()).Methods(http.MethodGet)
 

@@ -22,6 +22,7 @@ type Server struct {
 	templates packr.Box
 	docker    *client.Client
 	index     bleve.Index
+	logsIndex bleve.Index
 }
 
 func NewServer() (*Server, error) {

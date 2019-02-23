@@ -1,3 +1,7 @@
+:root {
+  --text-color: rgb(218, 219, 219);
+}
+
 body {
 	display: grid;
 	margin: 0;
@@ -6,12 +10,12 @@ body {
 	grid-template-columns: repeat(6, 1fr);
 	grid-template-rows: repeat(5, 1fr);
 	background-color: rgb(46, 48, 49);
-	color: rgb(218, 219, 219);
+	color: var(--text-color);
 	line-height: 2em;
 }
 
 a, a:visited, a:hover {
-	color: rgb(218, 219, 219);
+	color: var(--text-color);
 }
 
 dt, dd {
@@ -40,6 +44,17 @@ dd {
 	grid-row: 1;
 	justify-self: center;
 	font-size: 1.5em;
+}
+
+.navigation .menu {
+  display: inline-block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navigation .menu .menu-item {
+  display: inline-block;
 }
 
 .system {

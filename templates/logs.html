@@ -1,3 +1,14 @@
 {{ template "header" }}
-<main class="logs" data-controller="logs"></main>
+<main class="logs">
+  <form action="/logs">
+  <input type="text" placeholder="Search.." name="q">
+  <button type="submit">Submit</button>
+  </form>
+  <section class="">
+    {{ range . }}
+    <span class="container-name">{{ .ContainerName }}</span>
+    <span class="log-line">{{ .Log }}</span>
+    {{ end }}
+  </section>
+</main>
 {{ template "footer" }}
